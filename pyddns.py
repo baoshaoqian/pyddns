@@ -54,19 +54,22 @@ def main():
         ip = get_ip(IP_SOURCE)
         if ip:
             if ip != last_ip:
-                response = update_dns_record(
-                    AUTH_EMAIL,
-                    API_KEY,
-                    ZONE_IDENTIFIER,
-                    RECORD_IDENTIFIER,
-                    RECORD_NAME,
-                    ip,
-                )
-                if is_dns_update_sccessful(response):
-                    post_message("Successfully updated DNS record: \n" + response.text)
-                    last_ip = ip
-                else:
-                    post_message("Failed to update DNS record: \n" + response.text)
+                try:
+                    response = update_dns_record(
+                        AUTH_EMAIL,
+                        API_KEY,
+                        ZONE_IDENTIFIER,
+                        RECORD_IDENTIFIER,
+                        RECORD_NAME,
+                        ip,
+                    )
+                    if is_dns_update_sccessful(response):
+                        post_message("Successfully updated DNS record: \n" + response.text)
+                        last_ip = ip
+                    else:
+                        post_message("Failed to update DNS record: \n" + response.text)
+                except ConnectionError as e:
+                    post_message("ConnectionError: " + str(e))
         else:
             post_message("Failed to get IP from %s" % IP_SOURCE)
         time.sleep(CHECK_INTERVAL)
